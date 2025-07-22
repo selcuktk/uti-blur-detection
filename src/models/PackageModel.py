@@ -128,12 +128,12 @@ class Gaussian(Config):
 
 
 class DetectionFocusedInputs(Inputs):
-    inputImageOne: InputImageOne
+    inputImage: InputImage
     inputDetections: InputDetections
 
 
 class ImageFocusedInputs(Inputs):
-    inputImageOne: InputImageOne
+    inputImage: InputImage
 
 
 class DetectionFocusedConfigs(Configs):
