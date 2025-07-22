@@ -1,7 +1,7 @@
-
 from pydantic import Field, validator
 from typing import List, Optional, Union, Literal
-from sdks.novavision.src.base.model import Package, Image, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
+from sdks.novavision.src.base.model import Package, Image, Inputs, Configs, Outputs, Response, Request, Output, Input, \
+    Config, Detections
 
 
 class InputImage(Input):
@@ -20,10 +20,18 @@ class InputImage(Input):
     class Config:
         title = "Image"
 
+class InputDetections(Input):
+    name: Literal["inputDetections"] = "inputDetections"
+    value: List[Detection]
+    type: str = "list"
+
+    class Config:
+        title = "Detections"
+
 
 class OutputImage(Output):
     name: Literal["outputImage"] = "outputImage"
-    value: Union[List[Image],Image]
+    value: Union[List[Image], Image]
     type: str = "object"
 
     @validator("type", pre=True, always=True)
@@ -37,70 +45,116 @@ class OutputImage(Output):
     class Config:
         title = "Image"
 
-
-class KeepSideFalse(Config):
-    name: Literal["False"] = "False"
-    value: Literal[False] = False
-    type: Literal["bool"] = "bool"
+class High(Config):
+    name: Literal["High"] = "High"
+    value: Literal["High"] = "High"
+    type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Disable"
+        title = "High"
 
 
-class KeepSideTrue(Config):
-    name: Literal["True"] = "True"
-    value: Literal[True] = True
-    type: Literal["bool"] = "bool"
+class Medium(Config):
+    name: Literal["Medium"] = "Medium"
+    value: Literal["Medium"] = "Medium"
+    type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Enable"
+        title = "Medium"
 
 
-class KeepSideBBox(Config):
-    """
-        Rotate image without catting off sides.
-    """
-    name: Literal["KeepSide"] = "KeepSide"
-    value: Union[KeepSideTrue, KeepSideFalse]
+class Low(Config):
+    name: Literal["Low"] = "Low"
+    value: Literal["Low"] = "Low"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Low"
+
+
+class BlurLevel(Config):
+    name: Literal["BlurLevel"] = "BlurLevel"
+    value: Union[Low, Medium, High]
     type: Literal["object"] = "object"
     field: Literal["dropdownlist"] = "dropdownlist"
 
     class Config:
-        title = "Keep Sides"
+        title = "Blur Level"
 
 
-class Degree(Config):
-    """
-        Positive angles specify counterclockwise rotation while negative angles indicate clockwise rotation.
-    """
-    name: Literal["Degree"] = "Degree"
-    value: int = Field(ge=-359.0, le=359.0,default=0)
+class KernelSize(Config):
+    name: Literal["KernelSize"] = "KernelSize"
+    value: float = Field(default=5, ge=0, le=10)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["[-359, 359]"] = "[-359, 359]"
 
     class Config:
-        title = "Angle"
+        title = "KernelSize"
 
 
-class PackageInputs(Inputs):
-    inputImage: InputImage
+class Default(Config):
+    blurLevel: BlurLevel
+    name: Literal["Default"] = "Default"
+    value: Literal["Default"] = "Default"
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Default"
 
 
-class PackageConfigs(Configs):
-    degree: Degree
-    drawBBox: KeepSideBBox
+class Customized(Config):
+    kernelSize: KernelSize
+    name: Literal["Customized"] = "Customized"
+    value: Literal["Customized"] = "Customized"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Customized"
 
 
-class PackageOutputs(Outputs):
+class Gaussian(Config):
+    name: Literal["Gaussian"] = "Gaussian"
+    value: Union[Customized, Default]
+    type: Literal["object"] = "object"
+    field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
+
+    class Config:
+        title = "Gaussian"
+
+
+class DetectionFocusedInputs(Inputs):
+    inputImageOne: InputImageOne
+    inputDetections: InputDetections
+
+
+class ImageFocusedInputs(Inputs):
+    inputImageOne: InputImageOne
+
+
+class DetectionFocusedConfigs(Configs):
+    gaussian: Gaussian
+
+
+class ImageFocusedConfigs(Configs):
+    gaussian: Gaussian
+
+
+class DetectionFocusedOutputs(Outputs):
     outputImage: OutputImage
 
 
-class PackageRequest(Request):
-    inputs: Optional[PackageInputs]
-    configs: PackageConfigs
+class ImageFocusedOutputs(Outputs):
+    outputImage: OutputImage
+
+
+class DetectionFocusedRequest(Request):
+    inputs: Optional[DetectionFocusedInputs]
+    configs: DetectionFocusedConfigs
 
     class Config:
         json_schema_extra = {
@@ -108,18 +162,47 @@ class PackageRequest(Request):
         }
 
 
-class PackageResponse(Response):
-    outputs: PackageOutputs
+class ImageFocusedRequest(Request):
+    inputs: Optional[ImageFocusedInputs]
+    configs: ImageFocusedConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
 
 
-class PackageExecutor(Config):
-    name: Literal["Package"] = "Package"
-    value: Union[PackageRequest, PackageResponse]
+class DetectionFocusedResponse(Response):
+    outputs: DetectionFocusedOutputs
+
+
+class ImageFocusedResponse(Response):
+    outputs: ImageFocusedOutputs
+
+
+class DetectionFocusedExecutor(Config):
+    name: Literal["DetectionFocused"] = "DetectionFocused"
+    value: Union[DetectionFocusedRequest, DetectionFocusedResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Package"
+        title = "DetectionFocused"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
+
+
+class ImageFocusedExecutor(Config):
+    name: Literal["ImageFocused"] = "ImageFocused"
+    value: Union[ImageFocusedRequest, ImageFocusedResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "ImageFocused"
         json_schema_extra = {
             "target": {
                 "value": 0
@@ -129,15 +212,12 @@ class PackageExecutor(Config):
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PackageExecutor]
+    value: Union[ImageFocusedExecutor, DetectionFocusedExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
     class Config:
         title = "Task"
-        json_schema_extra = {
-            "target": "value"
-        }
 
 
 class PackageConfigs(Configs):
@@ -147,4 +227,4 @@ class PackageConfigs(Configs):
 class PackageModel(Package):
     configs: PackageConfigs
     type: Literal["component"] = "component"
-    name: Literal["Package"] = "Package"
+    name: Literal["BlurDetection"] = "BlurDetection"
