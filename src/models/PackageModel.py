@@ -20,6 +20,7 @@ class InputImage(Input):
     class Config:
         title = "Image"
 
+
 class InputDetections(Input):
     name: Literal["inputDetections"] = "inputDetections"
     value: List[Detection]
@@ -45,86 +46,90 @@ class OutputImage(Output):
     class Config:
         title = "Image"
 
-class High(Config):
-    name: Literal["High"] = "High"
-    value: Literal["High"] = "High"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "High"
-
-
-class Medium(Config):
-    name: Literal["Medium"] = "Medium"
-    value: Literal["Medium"] = "Medium"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Medium"
-
-
-class Low(Config):
-    name: Literal["Low"] = "Low"
-    value: Literal["Low"] = "Low"
-    type: Literal["string"] = "string"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Low"
-
-
-class BlurLevel(Config):
-    name: Literal["BlurLevel"] = "BlurLevel"
-    value: Union[Low, Medium, High]
-    type: Literal["object"] = "object"
-    field: Literal["dropdownlist"] = "dropdownlist"
-
-    class Config:
-        title = "Blur Level"
-
 
 class KernelSize(Config):
+    """
+    Low blur level:
+    Mediam blur level
+    High Blur level:
+    """
     name: Literal["KernelSize"] = "KernelSize"
-    value: float = Field(default=5, ge=0, le=10)
+    value: int = Field(ge=3, le=21, default=5)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
-    class Config:
-        title = "KernelSize"
-
-
-class Default(Config):
-    blurLevel: BlurLevel
-    name: Literal["Default"] = "Default"
-    value: Literal["Default"] = "Default"
-    type: Literal["object"] = "object"
-    field: Literal["option"] = "option"
+    @validator("value")
+    @classmethod()
+    def check_odd_value(cls, v:int):
+        value = v.get('value')
+        if value is not None and value % 2 == 0:
+            raise ValueError("Kernel size must be an odd number.")
+        return v
 
     class Config:
-        title = "Default"
+        title = "Kernel Size"
 
 
-class Customized(Config):
+
+class BlurGaussian(Config):
     kernelSize: KernelSize
-    name: Literal["Customized"] = "Customized"
-    value: Literal["Customized"] = "Customized"
+    name: Literal["BlurGaussian"] = "BlurGaussian"
+    value: Literal["BlurGaussian"] = "BlurGaussian"
     type: Literal["string"] = "string"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Customized"
+        title = "Gaussian"
 
 
-class Gaussian(Config):
-    name: Literal["Gaussian"] = "Gaussian"
-    value: Union[Customized, Default]
+class BlurAverage(Config):
+    kernelSize: KernelSize
+    name: Literal["BlurAverage"] = "BlurAverage"
+    value: Literal["BlurAverage"] = "BlurAverage"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Average"
+
+
+class BlurMedian(Config):
+    kernelSize: KernelSize
+    name: Literal["BlurMedian"] = "BlurMedian"
+    value: Literal["BlurMedian"] = "BlurMedian"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Median"
+
+
+class BlurBilateral(Config):
+    kernelSize: KernelSize
+    name: Literal["BlurBilateral"] = "BlurBilateral"
+    value: Literal["BlurBilateral"] = "BlurBilateral"
+    type: Literal["string"] = "string"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Bilateral"
+
+
+class BlurType(Config):
+    """
+        Blur Type can be selected from here
+    """
+    name: Literal["BlurType"] = "BlurType"
+    value: Union[BlurGaussian, BlurAverage, BlurMedian, BlurBilateral]
     type: Literal["object"] = "object"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
     class Config:
-        title = "Gaussian"
+        title = "Blur Type"
+
+
+class ImageFocusedInputs(Inputs):
+    inputImage: InputImage
 
 
 class DetectionFocusedInputs(Inputs):
@@ -132,34 +137,20 @@ class DetectionFocusedInputs(Inputs):
     inputDetections: InputDetections
 
 
-class ImageFocusedInputs(Inputs):
-    inputImage: InputImage
+class ImageFocusedConfigs(Configs):
+    blurType: BlurType
 
 
 class DetectionFocusedConfigs(Configs):
-    gaussian: Gaussian
-
-
-class ImageFocusedConfigs(Configs):
-    gaussian: Gaussian
-
-
-class DetectionFocusedOutputs(Outputs):
-    outputImage: OutputImage
+    blurType: BlurType
 
 
 class ImageFocusedOutputs(Outputs):
     outputImage: OutputImage
 
 
-class DetectionFocusedRequest(Request):
-    inputs: Optional[DetectionFocusedInputs]
-    configs: DetectionFocusedConfigs
-
-    class Config:
-        json_schema_extra = {
-            "target": "configs"
-        }
+class DetectionFocusedOutputs(Outputs):
+    outputImage: OutputImage
 
 
 class ImageFocusedRequest(Request):
@@ -172,27 +163,22 @@ class ImageFocusedRequest(Request):
         }
 
 
-class DetectionFocusedResponse(Response):
-    outputs: DetectionFocusedOutputs
+class DetectionFocusedRequest(Request):
+    inputs: Optional[DetectionFocusedInputs]
+    configs: DetectionFocusedConfigs
+
+    class Config:
+        json_schema_extra = {
+            "target": "configs"
+        }
 
 
 class ImageFocusedResponse(Response):
     outputs: ImageFocusedOutputs
 
 
-class DetectionFocusedExecutor(Config):
-    name: Literal["DetectionFocused"] = "DetectionFocused"
-    value: Union[DetectionFocusedRequest, DetectionFocusedResponse]
-    type: Literal["object"] = "object"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "DetectionFocused"
-        json_schema_extra = {
-            "target": {
-                "value": 0
-            }
-        }
+class DetectionFocusedResponse(Response):
+    outputs: DetectionFocusedOutputs
 
 
 class ImageFocusedExecutor(Config):
@@ -202,7 +188,22 @@ class ImageFocusedExecutor(Config):
     field: Literal["option"] = "option"
 
     class Config:
-        title = "ImageFocused"
+        title = "Image Focused Blur"
+        json_schema_extra = {
+            "target": {
+                "value": 0
+            }
+        }
+
+
+class DetectionFocusedExecutor(Config):
+    name: Literal["DetectionFocused"] = "DetectionFocused"
+    value: Union[DetectionFocusedRequest, DetectionFocusedResponse]
+    type: Literal["object"] = "object"
+    field: Literal["option"] = "option"
+
+    class Config:
+        title = "Detection Focused Blur"
         json_schema_extra = {
             "target": {
                 "value": 0
@@ -212,12 +213,15 @@ class ImageFocusedExecutor(Config):
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[ImageFocusedExecutor, DetectionFocusedExecutor]
+    value: Union[DetectionFocusedExecutor, ImageFocusedExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
     class Config:
         title = "Task"
+        json_schema_extra = {
+            "target": "value"
+        }
 
 
 class PackageConfigs(Configs):
