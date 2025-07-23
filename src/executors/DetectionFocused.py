@@ -10,7 +10,7 @@ from sdks.novavision.src.media.image import Image
 from sdks.novavision.src.helper.executor import Executor
 from sdks.novavision.src.base.component import Component
 from components.BlurDetection.src.utils.response import build_response_detectionFocused
-from components.BlurDetection.src.models.PackageModel import PackageModel, Default
+from components.BlurDetection.src.models.PackageModel import PackageModel
 
 
 class DetectionFocused(Component):
