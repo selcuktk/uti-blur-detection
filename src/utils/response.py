@@ -1,5 +1,5 @@
 from sdks.novavision.src.helper.package import PackageHelper
-from components.Package.src.models.PackageModel import PackageModel, PackageConfigs, ConfigExecutor, ImageFocusedOutputs, \
+from components.BlurDetection.src.models.PackageModel import PackageModel, PackageConfigs, ConfigExecutor, ImageFocusedOutputs, \
     ImageFocusedResponse, ImageFocusedExecutor, DetectionFocusedOutputs, DetectionFocusedResponse, DetectionFocusedExecutor, OutputImage
 
 
