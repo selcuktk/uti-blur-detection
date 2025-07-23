@@ -59,7 +59,7 @@ class KernelSize(Config):
     field: Literal["textInput"] = "textInput"
 
     @validator("value")
-    @classmethod()
+    @classmethod
     def check_odd_value(cls, v:int):
         value = v.get('value')
         if value is not None and value % 2 == 0:
