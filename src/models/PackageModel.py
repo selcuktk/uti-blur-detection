@@ -58,12 +58,6 @@ class KernelSize(Config):
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
-    @validator("value")
-    def check_odd_value(cls, v: int):
-        if v % 2 == 0:
-            raise ValueError("Kernel size must be an odd number.")
-        return v
-
     class Config:
         title = "Kernel Size"
 
