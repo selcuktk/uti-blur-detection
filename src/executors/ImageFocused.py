@@ -1,8 +1,6 @@
 import os
 import cv2
 import sys
-import math
-import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
@@ -28,29 +26,29 @@ class ImageFocused(Component):
     def load_parameters(self):
 
         if self.blur_type == "BlurGaussian":
-            self.kernel_size = self.request.get_param(self.blur_type)
+            self.kernel_size = self.request.get_param("KernelSize")
         elif self.blur_type == "BlurAverage":
-            self.kernel_size = self.request.get_param(self.blur_type)
+            self.kernel_size = self.request.get_param("KernelSize")
         elif self.blur_type == "BlurMedian":
-            self.kernel_size = self.request.get_param(self.blur_type)
+            self.kernel_size = self.request.get_param("KernelSize")
         elif self.blur_type == "BlurBilateral":
-            self.kernel_size = self.request.get_param(self.blur_type)
+            self.kernel_size = self.request.get_param("KernelSize")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
         return {}
 
     def blurring(self, image):
-        if blur_type == "BlurGaussian":
-            blurred_image = cv2.GaussianBlur(image, (ksize, ksize), 0)
-        elif blur_type == "BlurAverage":
-            blurred_image = cv2.blur(image, (ksize, ksize))
-        elif blur_type == "BlurMedian":
-            blurred_image = cv2.medianBlur(image, ksize)
-        elif blur_type == "BlurBilateral":
-            blurred_image = cv2.bilateralFilter(image, ksize, 75, 75)
+        if self.blur_type == "BlurGaussian":
+            blurred_image = cv2.GaussianBlur(image, (self.kernel_size, self.kernel_size), 0)
+        elif self.blur_type == "BlurAverage":
+            blurred_image = cv2.blur(image, (self.kernel_size, self.kernel_size))
+        elif self.blur_type == "BlurMedian":
+            blurred_image = cv2.medianBlur(image, self.kernel_size)
+        elif self.blur_type == "BlurBilateral":
+            blurred_image = cv2.bilateralFilter(image, self.kernel_size, 75, 75)
         else:
-            raise ValueError(f"Unknown blur type: {blur_type}")
+            raise ValueError(f"Unknown blur type: {self.blur_type}")
 
         return blurred_image
 
