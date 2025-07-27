@@ -1,6 +1,7 @@
 import os
 import cv2
 import sys
+import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
@@ -24,7 +25,6 @@ class ImageFocused(Component):
         self.image = self.request.get_param("inputImage")
 
     def load_parameters(self):
-
         if self.blur_type == "BlurGaussian":
             self.kernel_size = self.request.get_param("KernelSize")
         elif self.blur_type == "BlurAverage":
@@ -44,7 +44,11 @@ class ImageFocused(Component):
         elif self.blur_type == "BlurAverage":
             blurred_image = cv2.blur(image, (self.kernel_size, self.kernel_size))
         elif self.blur_type == "BlurMedian":
-            blurred_image = cv2.medianBlur(image, self.kernel_size)
+            # medianBlur does not support given type, first image translated into uint8, second medianBlur called, finally image is turned into back format
+            # part of information is lost in this transformation. But it is not critical since it is a image processing process
+            image_uint8 = image.astype(np.uint8)
+            blurred_uint8 = cv2.medianBlur(image_uint8, self.kernel_size)
+            blurred_image = blurred_uint8.astype(np.float32)
         elif self.blur_type == "BlurBilateral":
             blurred_image = cv2.bilateralFilter(image, self.kernel_size, 75, 75)
         else:
