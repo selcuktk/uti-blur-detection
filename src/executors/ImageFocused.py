@@ -39,13 +39,13 @@ class ImageFocused(Component):
 
     def blurring(self, image):
         if self.blur_type == "BlurGaussian":
-            blurred_image = self.blurring_gaussian(image)
+            blurred_image = blurring_gaussian(image)
         elif self.blur_type == "BlurAverage":
-            blurred_image = self.blurring_average(image)
+            blurred_image = blurring_average(image)
         elif self.blur_type == "BlurMedian":
-            blurred_image = self.blurring_median(image)
+            blurred_image = blurring_median(image)
         elif self.blur_type == "BlurBilateral":
-            blurred_image = self.blurring_bilateral(image)
+            blurred_image = blurring_bilateral(image)
         else:
             raise ValueError(f"Unknown blur type: {self.blur_type}")
 
