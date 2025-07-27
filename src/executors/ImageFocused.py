@@ -1,7 +1,5 @@
 import os
-import cv2
 import sys
-import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 
@@ -10,6 +8,7 @@ from sdks.novavision.src.helper.executor import Executor
 from sdks.novavision.src.base.component import Component
 from components.BlurDetection.src.utils.response import build_response_imageFocused
 from components.BlurDetection.src.models.PackageModel import PackageModel
+from components.BlurDetection.src.utils.utils import blurring_gaussian, blurring_average, blurring_median, blurring_bilateral
 
 
 class ImageFocused(Component):
@@ -37,22 +36,6 @@ class ImageFocused(Component):
     @staticmethod
     def bootstrap(config: dict) -> dict:
         return {}
-
-    def blurring_gaussian(self, image):
-        return cv2.GaussianBlur(image, (self.kernel_size, self.kernel_size), 0)
-
-    def blurring_average(self, image):
-        return cv2.blur(image, (self.kernel_size, self.kernel_size))
-
-    def blurring_median(self, image):
-        # medianBlur does not support given type, firstly image translated into uint8, secondly medianBlur function called, finally image is turned into back format
-        # part of information is lost in this transformation. But it is not critical since it is an image processing operation rather than being deep learning training data
-        image_uint8 = image.astype(np.uint8)
-        blurred_uint8 = cv2.medianBlur(image_uint8, self.kernel_size)
-        return blurred_uint8.astype(np.float32)
-
-    def blurring_bilateral(self, image):
-        return cv2.bilateralFilter(image, self.kernel_size, 75, 75)
 
     def blurring(self, image):
         if self.blur_type == "BlurGaussian":
