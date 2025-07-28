@@ -54,9 +54,15 @@ class KernelSize(Config):
     High Blur level:
     """
     name: Literal["KernelSize"] = "KernelSize"
-    value: int = Field(ge=3, le=21, default=5)
+    value: int = Field(ge=1, le=21, default=5)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
+
+    @validator("value")
+    def check_odd_value(cls, v: int):
+        if v % 2 == 0:
+            raise ValueError("Kernel size must be an odd number.")
+        return v
 
     class Config:
         title = "Kernel Size"
