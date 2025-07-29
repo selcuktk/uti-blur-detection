@@ -6,7 +6,7 @@ def blurring_gaussian(kernel_size, image):
 
 
 def blurring_average(kernel_size, image):
-    return cv2.blur(image, (51, 51))
+    return cv2.blur(image, (kernel_size, kernel_size))
 
 
 def blurring_median(kernel_size, image):
