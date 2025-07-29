@@ -55,7 +55,7 @@ class KernelSize(Config):
     High Blur level: >21
     """
     name: Literal["KernelSize"] = "KernelSize"
-    value: int = Field(ge=1, le=21, default=5)
+    value: int = Field(ge=1, le=51, default=5)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
 
