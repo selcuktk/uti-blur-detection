@@ -49,9 +49,9 @@ class OutputImage(Output):
 
 class KernelSize(Config):
     """
-    Kernel Size must be a odd number.
-    Low blur level: 1-11 \n
-    Mediam blur level 13-21 \n
+    Kernel Size must be an odd number. <br>
+    Low blur level: 1-11 <br>
+    Medium blur level: 13-21 <br>
     High Blur level: >21
     """
     name: Literal["KernelSize"] = "KernelSize"
