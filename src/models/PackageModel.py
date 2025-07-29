@@ -49,9 +49,10 @@ class OutputImage(Output):
 
 class KernelSize(Config):
     """
-    Low blur level:
-    Mediam blur level
-    High Blur level:
+    Kernel Size must be a odd number.
+    Low blur level: 1-11 \n
+    Mediam blur level 13-21 \n
+    High Blur level: >21
     """
     name: Literal["KernelSize"] = "KernelSize"
     value: int = Field(ge=1, le=21, default=5)
@@ -102,6 +103,9 @@ class BlurMedian(Config):
 
 
 class BlurBilateral(Config):
+    """
+        Bilateral
+    """
     kernelSize: KernelSize
     name: Literal["BlurBilateral"] = "BlurBilateral"
     value: Literal["BlurBilateral"] = "BlurBilateral"
@@ -226,3 +230,4 @@ class PackageModel(Package):
     configs: PackageConfigs
     type: Literal["component"] = "component"
     name: Literal["BlurDetection"] = "BlurDetection"
+
