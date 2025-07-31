@@ -9,7 +9,7 @@ The Blur Component is a configurable image preprocessing module designed to appl
 - OpenCV
 - Wsl
 - Redis
-
+<br><br>
 
 ## Features
 
@@ -20,7 +20,7 @@ The Blur Component is a configurable image preprocessing module designed to appl
     - Bilateral Filter
 - 🎛️ Configurable **kernel size** for tuning the blur intensity
 - 📦 Easily integrates with existing Novavision-ai packages 
-
+<br><br>
 
 ## Usage
 
@@ -37,7 +37,7 @@ There are 2 executors in Blur.
 2   . DetectionFocused: It takes 2 input as InputImage and InputDetections and gives 1 output as OutputImage. Use of the DetectionFocused can be seen at the image below.
 
 ![detection_workflow](https://github.com/user-attachments/assets/3a977105-203a-43a0-bdf8-0d123d5014b9)
-
+<br><br>
 
 ## Supported Configurations
 
@@ -45,7 +45,7 @@ There are 2 executors in Blur.
 | ------------- | ---- | ----------------------------------------------------- | ------------ |
 | `BlurType`   | str  | Type of blur: `"Gaussian"`, `"Average"`, `"Median"`, `"Bilateral"` | `"Gaussian"` |
 | `KernelSize` | int  | Size of the kernel (must be odd) (<52)                 | `25`          |
-
+<br><br>
 ## Screenshots
 1   .  ImageFocused with **BlurType:** Average & **KernelSize:** 51 
 <br><br>
@@ -54,4 +54,12 @@ There are 2 executors in Blur.
 2.  DetectionFocused with **BlurType:** Gaussian & **KernelSize:** 51
 <br><br>
 ![df_gaussian_51](https://github.com/user-attachments/assets/ef140c6a-59f8-4b79-84fe-8633cc460037)
+<br><br>
+## Important Notes
+
+- All the Blur functions including **Bilateral** filter are added into this package considering this [Roboflow Article: Image Blur Workflow](https://inference.roboflow.com/workflows/blocks/image_blur/). However it does not work well comparing other methods. Despite this, it was kept in the package.
+
+- It is essential **Kernel Size** to be odd number for some blur methods. To keep system simple, a validator and a logger are added to the system considering the users enter an even number for kernel size. The system gives the following warning message in these situation.
+<img width="765" height="45" alt="kernel_log" src="https://github.com/user-attachments/assets/21ebb7e2-3917-43c0-9043-9a87f07b61e6" />
+
 
